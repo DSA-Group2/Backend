@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 const generateToken = (userId) => {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
@@ -11,4 +11,4 @@ const verifyToken = (token) => {
     }
 };
 
-module.exports = { generateToken, verifyToken };
+export default { generateToken, verifyToken };

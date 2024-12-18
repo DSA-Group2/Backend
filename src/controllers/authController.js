@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-exports.signup = async (req, res) => {
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+const signup = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
         res.status(500).json({ message: "Server error.", error: err.message });
     }
 };
-exports.login = async (req, res) => {
+const login = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -45,3 +45,5 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: "Server error.", error: err.message });
     }
 };
+
+export { signup, login };
