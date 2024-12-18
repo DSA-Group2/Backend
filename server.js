@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 import inlineChatRoutes from './src/routes/inlineChatRoutes.js';
 
 dotenv.config();
-// connectDB();
+connectDB();
 
 const app = express();
 
