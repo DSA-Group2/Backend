@@ -61,7 +61,7 @@ const saveCode = async (req, res) => {
 };
 
 const getCodeHistory = async (req, res) => {
-    const { userId } = req.query;
+    const { userId } = req.params;
 
     if (!userId) {
         return res.status(400).json({ message: 'User ID is required.' });
@@ -69,6 +69,7 @@ const getCodeHistory = async (req, res) => {
 
     try {
         const history = await Code.find({ userId }).sort({ createdAt: -1 });
+        console.log(history);
         res.status(200).json(history);
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving code history', error: error.message });

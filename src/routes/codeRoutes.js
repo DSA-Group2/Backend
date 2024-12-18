@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.post('/execute', protect, executeCode);
 router.post('/save', protect, saveCode);
-router.get('/history', protect, getCodeHistory);
+router.get('/history/:userId', protect, getCodeHistory);
 router.put('/save/:id', protect, editCode); 
-router.delete('/save/:id', protect, deleteCode);
+router.delete('/delete/:id', protect, deleteCode);
 
 export default router;
