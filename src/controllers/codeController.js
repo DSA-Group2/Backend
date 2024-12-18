@@ -9,7 +9,13 @@ const executeCode = async (req, res) => {
     }
 
     try {
-        const response = await axios.post('https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&fields=*', { source_code, language_id, stdin }, {
+        const response = await axios.post('https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&fields=*', 
+        { 
+            source_code, 
+            language_id, 
+            stdin 
+        }, 
+        {
             headers: {
                 'Content-Type': 'application/json',
                 'X-RapidAPI-Key': process.env.JUDGE0_API_KEY,
@@ -18,7 +24,6 @@ const executeCode = async (req, res) => {
         });
 
         const token = response.data.token;
-        // Poll to check result
         async function checkResult() {
             const getResponse = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${token}`, {
                 headers: {
@@ -36,7 +41,7 @@ const executeCode = async (req, res) => {
                 return getResponse.data;
             }
         }
-        const finalResult = await checkResult();
+ const finalResult = await checkResult();
 
         res.status(200).json(finalResult);
     } catch (error) {
@@ -59,7 +64,6 @@ const saveCode = async (req, res) => {
         res.status(500).json({ message: 'Error saving code', error: error.message });
     }
 };
-
 const getCodeHistory = async (req, res) => {
     const { userId } = req.params;
 
@@ -69,7 +73,6 @@ const getCodeHistory = async (req, res) => {
 
     try {
         const history = await Code.find({ userId }).sort({ createdAt: -1 });
-        console.log(history);
         res.status(200).json(history);
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving code history', error: error.message });
@@ -87,7 +90,7 @@ const editCode = async (req, res) => {
         const updatedCode = await Code.findByIdAndUpdate(
             codeId,
             { source_code, language_id },
-            { new: true } // Return the updated document
+            { new: true } 
         );
 
         if (!updatedCode) {
@@ -100,6 +103,19 @@ const editCode = async (req, res) => {
     }
 };
 
+const getProgramById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const program = await Code.findById(id);
+        if (!program) {
+            return res.status(404).json({ message: "Program not found." });
+        }
+        res.status(200).json(program);
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving program details.", error: error.message });
+    }
+};
 const deleteCode = async (req, res) => {
     const codeId = req.params.id;
 
@@ -116,4 +132,4 @@ const deleteCode = async (req, res) => {
     }
 };
 
-export { executeCode, saveCode, getCodeHistory, editCode, deleteCode };
+export { executeCode, saveCode, getCodeHistory, editCode, deleteCode, getProgramById };
