@@ -1,5 +1,5 @@
-const axios = require('axios');
-const Code = require('../models/Code'); 
+import axios from 'axios';
+import Code from '../models/Code.js';
 const executeCode = async (req, res) => {
     const { source_code, language_id, stdin } = req.body;
 
@@ -58,4 +58,4 @@ const getCodeHistory = async (req, res) => {
     }
 };
 
-module.exports = { executeCode, saveCode, getCodeHistory };
+export { executeCode, saveCode, getCodeHistory };
