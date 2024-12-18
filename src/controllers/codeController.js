@@ -9,17 +9,36 @@ const executeCode = async (req, res) => {
     }
 
     try {
-        const response = await axios.post('https://api.judge0.com/submissions?base64_encoded=false', {
-            source_code,
-            language_id,
-            stdin
+        const response = await axios.post('https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&fields=*', { source_code, language_id, stdin }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-RapidAPI-Key': process.env.JUDGE0_API_KEY,
+                'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
+            },
         });
 
-        const { token } = response.data;
-        const resultResponse = await axios.get(`https://api.judge0.com/submissions/${token}?base64_encoded=false`);
-        const result = resultResponse.data;
+        const token = response.data.token;
+        // Poll to check result
+        async function checkResult() {
+            const getResponse = await axios.get(`https://judge0-ce.p.rapidapi.com/submissions/${token}`, {
+                headers: {
+                    'X-RapidAPI-Key': process.env.JUDGE0_API_KEY,
+                    'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com'
+                }
+            });
+            const { status } = getResponse.data;
+            
+            if (status.id <= 2) {
+                // Still in queue or processing, wait a bit and check again
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return checkResult();
+            } else {
+                return getResponse.data;
+            }
+        }
+        const finalResult = await checkResult();
 
-        res.status(200).json(result);
+        res.status(200).json(finalResult);
     } catch (error) {
         res.status(500).json({ message: 'Error executing code', error: error.message });
     }
