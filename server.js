@@ -15,7 +15,13 @@ connectDB();
 
 const app = express();
 
-app.use(cors())
+app.use(
+    cors({
+        origin: "https://cross-code-front.vercel.app/", // Replace with your frontend's URL
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 app.use(morgan('dev'));
 app.use(express.json());
 
