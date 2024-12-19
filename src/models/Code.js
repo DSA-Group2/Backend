@@ -6,6 +6,11 @@ const codeSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
     source_code: {
         type: String,
         required: true,
@@ -14,10 +19,8 @@ const codeSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    result: {
-        type: Object,
-    },
+   
 }, { timestamps: true });
 
-// module.exports = mongoose.model('Code', codeSchema);
+
 export default mongoose.model('Code', codeSchema);

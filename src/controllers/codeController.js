@@ -34,36 +34,37 @@ const executeCode = async (req, res) => {
             const { status } = getResponse.data;
             
             if (status.id <= 2) {
-                // Still in queue or processing, wait a bit and check again
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 return checkResult();
             } else {
                 return getResponse.data;
             }
         }
- const finalResult = await checkResult();
+        const finalResult = await checkResult();
 
         res.status(200).json(finalResult);
     } catch (error) {
         res.status(500).json({ message: 'Error executing code', error: error.message });
     }
 };
-const saveCode = async (req, res) => {
-    const { userId, source_code, language_id } = req.body;
 
-    if (!userId || !source_code || !language_id) {
+const saveCode = async (req, res) => {
+    const { userId, name, source_code, language_id } = req.body;
+
+    if (!userId || !name || !source_code || !language_id) {
         return res.status(400).json({ message: 'All fields are required.' });
     }
 
     try {
-        const newCode = new Code({ userId, source_code, language_id });
+        const newCode = new Code({ userId, name, source_code, language_id });
         await newCode.save();
 
-        res.status(201).json({ message: 'Code saved successfully' });
+        res.status(201).json({ message: 'Code saved successfully', code: newCode });
     } catch (error) {
         res.status(500).json({ message: 'Error saving code', error: error.message });
     }
 };
+
 const getCodeHistory = async (req, res) => {
     const { userId } = req.params;
 
@@ -78,18 +79,19 @@ const getCodeHistory = async (req, res) => {
         res.status(500).json({ message: 'Error retrieving code history', error: error.message });
     }
 };
+
 const editCode = async (req, res) => {
-    const { source_code, language_id } = req.body;
+    const { name, source_code, language_id } = req.body;
     const codeId = req.params.id;
 
-    if (!source_code || !language_id) {
-        return res.status(400).json({ message: 'Source code and language ID are required.' });
+    if (!name || !source_code || !language_id) {
+        return res.status(400).json({ message: 'Name, source code, and language ID are required.' });
     }
 
     try {
         const updatedCode = await Code.findByIdAndUpdate(
             codeId,
-            { source_code, language_id },
+            { name, source_code, language_id },
             { new: true } 
         );
 
@@ -116,6 +118,7 @@ const getProgramById = async (req, res) => {
         res.status(500).json({ message: "Error retrieving program details.", error: error.message });
     }
 };
+
 const deleteCode = async (req, res) => {
     const codeId = req.params.id;
 
